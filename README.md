@@ -11,7 +11,7 @@ Open Semantic Visual Linked Data Knowledge Graph Explorer is a web app providing
 Document & thesaurus based entity graph exploration by co-occurences of entities in documents
 ---------------------------------------------------------------------------------------------
 
-A click on a connection / edge "Documents (co-occurence)" shows you in how many and which documents the connected entities occur together.
+A click on a connection / edge with the connection type / property "Documents (co-occurence)" shows you in how many and which documents the connected entities occur together.
 
 In the tab "Preview" you can preview the single documents.
 
@@ -52,5 +52,5 @@ Optional dependencies / integration
 Optional dependencies for integrated graph database(s) or faceted search index where your knowledge graph, entities, connections and/or documents are stored:
 
 - Apache Solr (https://lucene.apache.org/solr/)
-- Planed: Neo4j (https://neo4j.com)
-- Planed: SPARQL triplestore like Apache Jena (https://jena.apache.org/)
+- Planned: Neo4j (https://neo4j.com)
+- Planned: SPARQL triplestore like Apache Jena (https://jena.apache.org/)

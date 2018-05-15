@@ -1,0 +1,361 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+
+
+		<title>Open Semantic Visual Graph Explorer</title>
+
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+
+		{% load static from staticfiles %}
+
+		<link href="{% static "cytoscape.js-panzoom.css" %}" rel="stylesheet" type="text/css" />
+		<link href="{% static "font-awesome-4.0.3/css/font-awesome.css" %}" rel="stylesheet" type="text/css" />
+
+		<script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+		<script src="{% static "cytoscape.min.js" %}"></script>
+
+		<script src="{% static "cytoscape-panzoom.js" %}"></script>
+
+		<script src="{% static "foundation/js/foundation.min.js" %}"></script>
+
+
+		<link rel="stylesheet" href="{% static "foundation/css/foundation.css" %}" />
+
+		<style>
+
+			body {
+				font-family: helvetica;
+				font-size: 10px;
+			}
+
+			#cy {
+				width: 100%;
+				height: 100%;
+				z-index: -1;
+				position: absolute;
+			}
+
+			#bar {
+				z-index: 9999;
+			}
+
+			h1 {
+				opacity: 0.5;
+				font-size: 1em;
+			}
+
+			#facets{
+			}
+
+			.facet{
+				padding: 5px;
+				margin-top: 5px;
+				margin-right: 5px;
+				border-radius: 12px;
+			}
+			#documents{
+				min-width: 40%;
+			}
+
+#wait {
+  background: none repeat scroll 0% 0% rgb(53, 53, 53);
+  color: rgb(255, 255, 255);
+  opacity: 0.6;
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  z-index: 5;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  margin: 0px;
+  padding: 50px;
+  padding-top: 20%;
+  display: none;
+  font-weight: bold;
+}
+
+		</style>
+
+		<script>
+
+var limit = -1;
+var more_node_size = 10;
+var more_edge_size = 3;
+
+var facets = {{ facets }};
+
+var layout = {
+   	  name: 'cose',
+   	  idealEdgeLength: 100,
+        nodeOverlap: 20,
+        refresh: 20,
+        fit: true,
+        padding: 30,
+        randomize: false,
+        componentSpacing: 100,
+        nodeRepulsion: 400000,
+        edgeElasticity: 100,
+        nestingFactor: 5,
+        gravity: 80,
+        numIter: 1000,
+        initialTemp: 200,
+        coolingFactor: 0.95,
+        minTemp: 1.0
+};		
+		
+
+/*
+ * Display wait-indicator.
+ */
+function waiting_on() {
+$("#wait").css("display", "block");
+
+}
+
+function waiting_off() {
+
+$("#wait").css("display", "none");
+
+}
+
+function show_facets() {
+
+	for (var facet in facets) {
+
+		if (facets[facet].count > 0) {
+			var div_facet = document.getElementById(facet);
+
+			if (div_facet == null) {
+				div_facet = document.createElement("li");
+				div_facet.setAttribute("id", facet);
+				div_facet.style.backgroundColor = facets[facet].bg;
+				div_facet.className = 'facet';
+
+				document.getElementById("facets").appendChild(div_facet);
+			};
+		
+			div_facet.innerHTML = '<b>' + facets[facet].label + '</b> (' + facets[facet].count + ')';
+		}
+	};
+};
+
+
+function documents(edge) {
+	
+	var label = "Documents where \"<mark>" + edge.data("source") + "</mark>\" and \"<mark>" + edge.data("target")+"</mark>\" occur together:";
+	document.getElementById('documents_label').innerHTML = label;
+
+	searchurl = "/search?embedded=true&operator=AND&q=\"" + edge.data("source") + "\" \"" + edge.data("target")+"\"";
+
+	document.getElementById('documents_results').src = searchurl;
+
+	$('#documents').foundation('toggle');
+
+}
+
+
+function more_connections(entity) {
+
+					waiting_on();
+				
+					$.getJSON("/search-apps/graph/select?limit=" + limit + "&q=\"" + entity.id() + "\"", function (data) {
+
+
+						for (var connected_entity_data of data.nodes) {
+
+							var node_exists = false;
+							node_exists = cy.nodes().some(function( ele ){
+   							if (ele.id() == connected_entity_data.data.id) { return true; } else { return false; };
+							});
+							
+							if (node_exists==false) {
+
+								var connected_entity_node_data = {data: {id: connected_entity_data.data.id, name: connected_entity_data.data.name, weight: connected_entity_data.data.weight, bg: facets[connected_entity_data.data.type].bg}}
+								
+								cy.add(connected_entity_node_data);
+
+								connected_entity = cy.getElementById(connected_entity_data.data.id);
+								connected_entity.on("click", function(){
+										more_connections(this);
+								});
+
+
+								if (connected_entity_data.data.type in facets) {
+									facets[connected_entity_data.data.type].count += 1;
+								} else {
+									facets[connected_entity_data.data.type] = { count: 1 };
+								}
+
+							};
+ 							
+ 							if (entity.id() != connected_entity_data.data.id) {
+
+								var edge_data = { data: { source: entity.id(), target: connected_entity_data.data.id, weight: Math.ceil(connected_entity_data.data.weight/3) } };
+ 								edge = cy.add(edge_data);
+
+ 								edge.on("click", function(){
+										documents(this);
+								});
+ 								
+ 								
+ 							};
+						};
+
+						var layouter = cy.layout(layout);
+
+						layouter.run();
+
+						show_facets();
+					
+						waiting_off();
+
+
+					})
+
+};
+		
+
+$(function(){
+
+				var cy = window.cy = cytoscape({
+					container: document.getElementById('cy'),
+
+					ready: function(){
+					},
+
+					style: [
+						{
+							selector: 'node',
+							css: {
+								'content': 'data(name)',
+
+							}
+						},
+						{
+						selector: 'node[weight]',
+							css: {
+								'width': 'data(weight)',
+								'height': 'data(weight)'
+							}
+						},
+						{
+							selector: 'node[bg]',
+							css: {
+								'background-color': 'data(bg)'
+
+							}
+						},
+						{
+							selector: 'edge',
+							css: {
+								'target-arrow-shape': 'triangle'
+							}
+						},
+						{
+						selector: 'edge[weight]',
+							css: {
+								'width': 'data(weight)' 
+							}
+						}
+					],
+
+			      layout: layout,
+
+					elements: {{ elements }}
+
+				});
+
+
+				cy.nodes().forEach(function( ele ){
+
+					ele.data('bg', facets[ele.data('type')].bg);
+
+   				ele.on("click", function(){
+									more_connections(this);
+					});
+
+					if (ele.data('type') != 'query') {
+						
+						if (ele.data('type') in facets) {
+							facets[ele.data('type')].count += 1;
+						} else {
+							facets[ele.data('type')] = { count: 1 };
+						}
+   				};
+				});
+
+				cy.edges().forEach(function( ele ){
+
+   					ele.on("click", function(){
+										documents(this);
+								});
+
+				});
+
+				cy.panzoom({
+					// options here...
+				});
+
+				var layouter = cy.layout(layout);
+
+				layouter.run();
+				
+				show_facets();
+
+
+			});
+			
+		</script>
+
+	</head>
+
+	<body>
+
+
+<div id="wait">
+  <img src="/search/images/ajax-loader.gif">
+  <p>Searching ...</p>
+</div>
+
+
+
+<div class="off-canvas position-right" id="documents" data-off-canvas>
+
+<div class="grid-y" style="height: 100%;">
+<div class="cell">
+    <!-- Close button -->
+    <button class="close-button" aria-label="Close menu" type="button" data-close onclick="document.getElementById('documents_results').src = '';">
+      <span aria-hidden="true">&times;</span>
+    </button>
+<h3>Documents</h3>
+<p id="documents_label" />
+</div>
+
+
+<iframe id="documents_results" class="cell auto"></iframe>
+
+    
+    
+  </div>
+</div>
+  <div class="off-canvas-content" data-off-canvas-content>
+
+<ul id="facets" class="menu expanded" data-magellan>
+</ul>
+
+  </div>
+
+
+<div id="cy"></div>
+
+
+    <script>
+      $(document).foundation();
+    </script>
+
+
+</body>
+</html>

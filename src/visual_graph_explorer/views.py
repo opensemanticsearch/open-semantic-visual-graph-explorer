@@ -27,11 +27,12 @@ def scale_weight(weight=1):
 	return weight
 
 
-def query( q="", limit=None):
+def query( q="", fields=None, limit=None):
 
-	fields = []
-	for facet in Facet.objects.filter(graph_enabled=True).order_by('facet_order'):
-		fields.append(facet.facet)
+	if not fields:
+		fields = []
+		for facet in Facet.objects.filter(graph_enabled=True).order_by('facet_order'):
+			fields.append(facet.facet)
 		
 	nodes = []
 	edges = []
@@ -96,14 +97,18 @@ def graph(request):
 
 	# query
 	q = "*:*"
+	fields = None
 	limit = 100
 	if request.GET:
 		if 'q' in request.GET:
-			q = request.GET['q']
+			if request.GET['q']:
+				q = request.GET['q']
 		if 'limit' in request.GET:
 			limit = int(request.GET['limit'])
+		if 'fl' in request.GET:
+			fields = request.GET['fl'].split(',')
 
-	elements = query(q, limit=limit)
+	elements = query(q, fields=fields, limit=limit)
 
 
 	# get facet layout
@@ -114,7 +119,9 @@ def graph(request):
 		for node in elements['nodes']:
 			if node['data']['type'] == facet.facet:
 				count += 1
-		facets[facet.facet]= {'label': facet.label, 'bg': facet.style_color_background, 'count': count}
+
+		if facet.facet in fields:
+			facets[facet.facet]= {'label': facet.label, 'bg': facet.style_color_background, 'count': count}
 
 	
 	return render(request, 'graph.html', 
@@ -127,11 +134,15 @@ def graph(request):
 def select(request):
 
 	q = request.GET['q']
+	
+	fields = None
+	if 'fl' in request.GET:
+		fields = request.GET['fl'].split(',')
 
 	limit = None
 	if 'limit' in request.GET:
 		limit = int(request.GET['limit'])
 
-	results = query(q=q, limit=limit)
+	results = query(q=q, fields=fields, limit=limit)
 	
 	return JsonResponse(results)

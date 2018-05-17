@@ -160,8 +160,18 @@ function documents(edge) {
 function more_connections(entity) {
 
 					waiting_on();
+
+					var fields = '';
+					var first = true;
+					for (var facet in facets) {
+						
+						if (first == true) { first = false; }
+						else { fields += ','; }
+
+						fields += facet;
+					}				
 				
-					$.getJSON("/search-apps/graph/select?limit=" + limit + "&q=\"" + entity.id() + "\"", function (data) {
+					$.getJSON("/search-apps/graph/select?fl=" + fields +"&limit=" + limit + "&q=\"" + entity.id() + "\"", function (data) {
 
 
 						for (var connected_entity_data of data.nodes) {

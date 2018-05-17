@@ -82,8 +82,8 @@
 		<script>
 
 var limit = -1;
-var more_node_size = 10;
-var more_edge_size = 3;
+var query_bg = 'yellow';
+
 
 var facets = {{ facets }};
 
@@ -271,13 +271,17 @@ $(function(){
 
 				cy.nodes().forEach(function( ele ){
 
-					ele.data('bg', facets[ele.data('type')].bg);
-
    				ele.on("click", function(){
 									more_connections(this);
 					});
 
-					if (ele.data('type') != 'query') {
+					if (ele.data('type') == 'query') {
+
+						ele.data('bg', query_bg);
+
+					} else {
+	
+						ele.data('bg', facets[ele.data('type')].bg);
 						
 						if (ele.data('type') in facets) {
 							facets[ele.data('type')].count += 1;
@@ -290,8 +294,8 @@ $(function(){
 				cy.edges().forEach(function( ele ){
 
    					ele.on("click", function(){
-										documents(this);
-								});
+							documents(this);
+						});
 
 				});
 

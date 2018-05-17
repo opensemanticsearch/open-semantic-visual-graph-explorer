@@ -171,8 +171,7 @@ function more_connections(entity) {
 						fields += facet;
 					}				
 				
-					$.getJSON("/search-apps/graph/select?fl=" + fields +"&limit=" + limit + "&q=\"" + entity.id() + "\"", function (data) {
-
+					$.getJSON("/search-apps/graph/select?fl=" + fields + "&limit=" + limit + "&q=\"" + entity.id() + "\"", function (data) {
 
 						for (var connected_entity_data of data.nodes) {
 

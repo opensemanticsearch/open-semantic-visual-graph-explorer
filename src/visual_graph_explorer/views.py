@@ -123,6 +123,12 @@ def graph(request):
 		if facet.facet in fields:
 			facets[facet.facet]= {'label': facet.label, 'bg': facet.style_color_background, 'count': count}
 
+	# add fields without facet config with default settings
+	for field in fields:
+		if not field in facets:
+			facets[field]= {'label': field, 'bg': 'lightgray', 'count': 0}
+			
+
 	
 	return render(request, 'graph.html', 
 				{	

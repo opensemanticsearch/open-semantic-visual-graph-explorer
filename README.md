@@ -8,6 +8,14 @@ Open Source web app and user interace (UI) for discovery, exploration and visual
 Open Semantic Visual Linked Data Knowledge Graph Explorer is a web app providing user interfaces (UI) to discover, explore and visualize linked data in a graph for visualization and exploration of direct and indirect connections between entities like people, organizations and locations in your Linked Data Knowledge Graph (for example extracted from your documents by Open Semantic Search or Open Semantic ETL).
 
 
+Visual graph user interfaces (UI)
+---------------------------------
+
+Learn more about usage of the graph user interfaces in the documentation (including screenshots):
+
+https://opensemanticsearch.org/doc/analytics/graph
+
+
 Document & thesaurus based entity graph exploration by co-occurences of entities in documents
 ---------------------------------------------------------------------------------------------
 
@@ -18,14 +26,6 @@ In the tab "Preview" you can preview the single documents.
 In the tab "Entities" or other options in the sub menu "Analyze" you can analyze & filter this documents and other named entities within this documents.
 
 If you set up a thesaurus or an ontology, the linked concepts of your thesaurus or the selected ontology are shown in the graph, too, so additionally to occuring entities you can explore by concepts of your thesaurus or ontologies in the document content, too.
-
-
-Usage of visual graph user interfaces (UI)
-------------------------------------------
-
-Learn more about the graph user interfaces and see how to use them in the documentation (including screenshots):
-
-https://opensemanticsearch.org/doc/analytics/graph
 
 
 Architecture: Integrates Python Django, Apache Solr and Cytoscape.js

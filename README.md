@@ -16,10 +16,12 @@ Learn more about usage of the graph user interfaces in the documentation (includ
 https://opensemanticsearch.org/doc/analytics/graph
 
 
-Document & thesaurus based entity graph exploration by co-occurences of entities in documents
----------------------------------------------------------------------------------------------
+Document & thesaurus based entity graph exploration by co-occurrences of entities in documents
+----------------------------------------------------------------------------------------------
 
-A click on a connection / edge with the connection type / property "Documents (co-occurence)" shows you in how many and which documents the connected entities occur together.
+A click on a connection / edge with the connection type / property "Documents (co-occurrence)" shows you in how many and which documents the connected entities occur together.
+
+In the tab "List" you see a list of documents in which both connected entities occur.
 
 In the tab "Preview" you can preview the single documents.
 

@@ -148,7 +148,7 @@ function documents(edge) {
 	var label = "Documents where \"<mark>" + edge.data("source") + "</mark>\" and \"<mark>" + edge.data("target")+"</mark>\" occur together:";
 	document.getElementById('documents_label').innerHTML = label;
 
-	searchurl = "/search?embedded=true&operator=AND&q=\"" + edge.data("source") + "\" \"" + edge.data("target")+"\"";
+	searchurl = "/search?embedded=true&operator=AND&stemming=stemming&synonyms=synonyms&q=\"" + edge.data("source") + "\" \"" + edge.data("target")+"\"";
 
 	document.getElementById('documents_results').src = searchurl;
 

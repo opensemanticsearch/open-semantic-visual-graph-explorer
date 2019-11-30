@@ -7,10 +7,15 @@ import django.utils.html
 import requests
 import json
 import math
+import os
 
 from thesaurus.models import Facet
 
 solr='http://localhost:8983/solr/'
+
+if os.getenv('OPEN_SEMANTIC_ETL_SOLR'):
+	solr = os.getenv('OPEN_SEMANTIC_ETL_SOLR')
+
 solr_core='opensemanticsearch'
 
 size_min = 15

@@ -148,7 +148,7 @@ function documents(edge) {
 	var label = "Documents where \"<mark>" + edge.data("source") + "</mark>\" and \"<mark>" + edge.data("target")+"</mark>\" occur together:";
 	document.getElementById('documents_label').innerHTML = label;
 
-	searchurl = "/search?embedded=true&operator=AND&stemming=stemming&synonyms=synonyms&q=\"" + edge.data("source") + "\" \"" + edge.data("target")+"\"";
+	searchurl = "/search?embedded=true&operator=AND&stemming=stemming&synonyms=synonyms&q=\"" + encodeURIComponent(edge.data("source")) + "\" \"" + encodeURIComponent(edge.data("target"))+"\"";
 
 	document.getElementById('documents_results').src = searchurl;
 
@@ -171,7 +171,7 @@ function more_connections(entity) {
 						fields += facet;
 					}				
 				
-					$.getJSON("/search-apps/graph/select?fl=" + fields + "&limit=" + limit + "&q=\"" + entity.id() + "\"", function (data) {
+					$.getJSON("/search-apps/graph/select?fl=" + fields + "&limit=" + limit + "&q=\"" + encodeURIComponent(entity.id()) + "\"", function (data) {
 
 						for (var connected_entity_data of data.nodes) {
 
